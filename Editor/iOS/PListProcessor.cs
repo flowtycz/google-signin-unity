@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+#if UNITY_IOS
 using UnityEngine;
 
 using UnityEditor;
@@ -63,5 +64,5 @@ public class PListProcessor : IPostprocessBuildWithReport
 #endif
     }
 }
-
+#endif
 #endif
