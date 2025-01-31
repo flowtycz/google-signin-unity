@@ -120,40 +120,40 @@ namespace Google.Impl
           context.Response.OutputStream.Write(Encoding.UTF8.GetBytes("Can close this page"));
           context.Response.Close();
 
-          var jobj = await HttpWebRequest.CreateHttp("https://www.googleapis.com/oauth2/v4/token").Post("application/x-www-form-urlencoded","code=" + code + "&client_id=" + configuration.WebClientId + "&client_secret=" + configuration.ClientSecret + "&redirect_uri=" + httpListener.Prefixes.FirstOrDefault() + "&grant_type=authorization_code").ContinueWith((task) => {
-            return JObject.Parse(task.Result);
-          },taskScheduler);
+        //   var jobj = await HttpWebRequest.CreateHttp("https://www.googleapis.com/oauth2/v4/token").Post("application/x-www-form-urlencoded","code=" + code + "&client_id=" + configuration.WebClientId + "&client_secret=" + configuration.ClientSecret + "&redirect_uri=" + httpListener.Prefixes.FirstOrDefault() + "&grant_type=authorization_code").ContinueWith((task) => {
+        //     return JObject.Parse(task.Result);
+        //   },taskScheduler);
 
-          var accessToken = (string)jobj.GetValue("access_token");
-          var expiresIn = (int)jobj.GetValue("expires_in");
-          var scope = (string)jobj.GetValue("scope");
-          var tokenType = (string)jobj.GetValue("token_type");
+        //   var accessToken = code;
+        //   var expiresIn = (int)jobj.GetValue("expires_in");
+        //   var scope = (string)jobj.GetValue("scope");
+        //   var tokenType = (string)jobj.GetValue("token_type");
 
           var user = new GoogleSignInUser();
           if(configuration.RequestAuthCode)
             user.AuthCode = code;
 
-          if(configuration.RequestIdToken)
-            user.IdToken = (string)jobj.GetValue("id_token");
+        //   if(configuration.RequestIdToken)
+        //     user.IdToken = (string)jobj.GetValue("id_token");
 
-          var request = HttpWebRequest.CreateHttp("https://openidconnect.googleapis.com/v1/userinfo");
-          request.Method = "GET";
-          request.Headers.Add("Authorization", "Bearer " + accessToken);
+        //   var request = HttpWebRequest.CreateHttp("https://openidconnect.googleapis.com/v1/userinfo");
+        //   request.Method = "GET";
+        //   request.Headers.Add("Authorization", "Bearer " + accessToken);
 
-          var data = await request.GetResponseAsStringAsync().ContinueWith((task) => task.Result,taskScheduler);
-          var userInfo = JObject.Parse(data);
-          user.UserId = (string)userInfo.GetValue("sub");
-          user.DisplayName = (string)userInfo.GetValue("name");
+        //   var data = await request.GetResponseAsStringAsync().ContinueWith((task) => task.Result,taskScheduler);
+        //   var userInfo = JObject.Parse(data);
+        //   user.UserId = (string)userInfo.GetValue("sub");
+          user.DisplayName = "Editor User";
 
-          if(configuration.RequestEmail)
-            user.Email = (string)userInfo.GetValue("email");
+        //   if(configuration.RequestEmail)
+        //     user.Email = (string)userInfo.GetValue("email");
 
-          if(configuration.RequestProfile)
-          {
-            user.GivenName = (string)userInfo.GetValue("given_name");
-            user.FamilyName = (string)userInfo.GetValue("family_name");
-            user.ImageUrl = Uri.TryCreate((string)userInfo.GetValue("picture"),UriKind.Absolute,out var url) ? url : null;
-          }
+        //   if(configuration.RequestProfile)
+        //   {
+        //     user.GivenName = (string)userInfo.GetValue("given_name");
+        //     user.FamilyName = (string)userInfo.GetValue("family_name");
+        //     user.ImageUrl = Uri.TryCreate((string)userInfo.GetValue("picture"),UriKind.Absolute,out var url) ? url : null;
+        //   }
 
           Result = user;
 
